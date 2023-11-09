@@ -19,7 +19,9 @@ const paymentAuth = require("./routes/payment");
 require("dotenv").config();
 
 //middlewares
-app.use(cors({ origin: ["http://localhost:8888", "http://127.0.0.1:8888"] }));
+app.use(
+  cors({ origin: ["http://192.168.29.210:3000,https://payments.grovyo.com"] })
+);
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -107,7 +109,7 @@ io.on("connection", (socket) => {
           a?.includes(v?.vpa)) &&
         v?.amount === data?.amount?.split(".")[0]
     );
-
+    console.log(data, vpa);
     if (newvpa && matchedVPA) {
       io.to(matchedVPA?.socketid).emit("data", newvpa);
       const updatedVPA = vpa.filter(
