@@ -69,7 +69,7 @@ exports.savepayment = async (req, res) => {
 exports.pendingpay = async (req, res) => {
   const { data } = req.body;
   const a = await decryptaes(data);
-  console.log(a, dec);
+  console.log(a, "dec");
   try {
     const payment = new Pendingpay({
       amount: a.amount,
@@ -88,12 +88,9 @@ exports.pendingpay = async (req, res) => {
 exports.fixpay = async (req, res) => {
   const { data } = req.params;
   const a = await decryptaes(data);
-  console.log(a, dec);
+  console.log(a, "dec");
   try {
-    await Pendingpay.updateOne(
-      { _id: data.id },
-      { $set: { status: "success" } }
-    );
+    await Pendingpay.updateOne({ _id: a.id }, { $set: { status: "success" } });
 
     res.status(200).json({ success: true });
   } catch (e) {
