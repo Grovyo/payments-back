@@ -1,6 +1,37 @@
 const Payment = require("../models/payment");
 const Pendingpay = require("../models/pendingpay");
-const Enc = require("../utils/enc");
+
+const aesjs = require("aes-js");
+
+const decryptaes = (data) => {
+  try {
+    const encryptedBytes = aesjs.utils.hex.toBytes(data);
+    const aesCtr = new aesjs.ModeOfOperation.ctr(
+      JSON.parse(process.env.KEY),
+      new aesjs.Counter(5)
+    );
+    const decryptedBytes = aesCtr.decrypt(encryptedBytes);
+    const decryptedText = aesjs.utils.utf8.fromBytes(decryptedBytes);
+    return decryptedText;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const encryptaes = (data) => {
+  try {
+    const textBytes = aesjs.utils.utf8.toBytes(data);
+    const aesCtr = new aesjs.ModeOfOperation.ctr(
+      JSON.parse(process.env.KEY),
+      new aesjs.Counter(5)
+    );
+    const encryptedBytes = aesCtr.encrypt(textBytes);
+    const encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+    return encryptedHex;
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 exports.savepayment = async (req, res) => {
   const {
@@ -37,7 +68,7 @@ exports.savepayment = async (req, res) => {
 
 exports.pendingpay = async (req, res) => {
   const { data } = req.body;
-  const a = await Enc.decryptaes(data);
+  const a = await decryptaes(data);
   console.log(a, dec);
   try {
     const payment = new Pendingpay({
@@ -56,7 +87,7 @@ exports.pendingpay = async (req, res) => {
 
 exports.fixpay = async (req, res) => {
   const { data } = req.params;
-  const a = await Enc.decryptaes(data);
+  const a = await decryptaes(data);
   console.log(a, dec);
   try {
     await Pendingpay.updateOne(

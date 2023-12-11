@@ -1,5 +1,7 @@
-import aesjs from "aes-js";
-const key = JSON.parse(process.env.NEXT_PUBLIC_KEY);
+const aesjs = require("aes-js");
+
+const key = JSON.parse(process.env.KEY);
+
 const decryptaes = (data) => {
   try {
     const encryptedBytes = aesjs.utils.hex.toBytes(data);
@@ -24,4 +26,4 @@ const encryptaes = (data) => {
   }
 };
 
-export { encryptaes, decryptaes };
+module.exports = { encryptaes, decryptaes };
