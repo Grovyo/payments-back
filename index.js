@@ -19,9 +19,11 @@ const paymentAuth = require("./routes/payment");
 require("dotenv").config();
 
 //middlewares
-app.use(
-  cors({ origin: ["http://192.168.29.210:3000,https://payments.grovyo.com"] })
-);
+// app.use(
+//   cors({ origin: ["http://192.168.29.210:3000,https://payments.grovyo.com"] })
+// );
+
+app.use(cors());
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -94,9 +96,11 @@ io.on("connection", (socket) => {
           v?.vpa?.split("@")[0] === a?.split("a")[0] ||
           v?.vpa?.split("@")[0] === a ||
           v?.vpa === a?.split("@")[0] ||
-          a?.includes(v?.vpa)) &&
-        v?.amount === data?.amount?.split(".")[0]
+          a?.includes(v?.vpa) ||
+          v?.vpa?.split("@")[0] === b[0]) &&
+        parseInt(v?.amount) === parseInt(data?.amount?.split(".")[0])
     );
+
     const matchedVPA = vpa.find(
       (v) =>
         (v?.vpa === b[0] + b[1] ||
@@ -106,10 +110,11 @@ io.on("connection", (socket) => {
           v?.vpa?.split("@")[0] === a?.split("a")[0] ||
           v?.vpa?.split("@")[0] === a ||
           v?.vpa === a?.split("@")[0] ||
-          a?.includes(v?.vpa)) &&
-        v?.amount === data?.amount?.split(".")[0]
+          a?.includes(v?.vpa) ||
+          v?.vpa?.split("@")[0] === b[0]) &&
+        parseInt(v?.amount) === parseInt(data?.amount?.split(".")[0])
     );
-    console.log(data, vpa);
+
     if (newvpa && matchedVPA) {
       io.to(matchedVPA?.socketid).emit("data", newvpa);
       const updatedVPA = vpa.filter(
@@ -119,7 +124,9 @@ io.on("connection", (socket) => {
       vpa = updatedVPA;
     }
   });
-  socket.on("disconnect", () => {});
+  socket.on("disconnect", () => {
+    console.log("Disconnected");
+  });
 });
 
 http.listen(4300, function () {

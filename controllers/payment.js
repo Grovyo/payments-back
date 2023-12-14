@@ -68,14 +68,17 @@ exports.savepayment = async (req, res) => {
 
 exports.pendingpay = async (req, res) => {
   const { data } = req.body;
-  const a = await decryptaes(data);
-  console.log(a, "dec");
+  const d = await decryptaes(data);
+  let a = JSON.parse(d);
   try {
     const payment = new Pendingpay({
       amount: a.amount,
       time: a.time,
       userid: a.userid,
       status: "pending",
+      from: a.from,
+      email: a?.email,
+      upi: a?.upi,
     });
     await payment.save();
     res.status(200).json({ success: true, p: payment._id });

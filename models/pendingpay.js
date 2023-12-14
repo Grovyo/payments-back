@@ -13,6 +13,9 @@ const pendingpay = new mongoose.Schema(
     vpa: { type: String },
     message: { type: String },
     userid: { type: String },
+    email: { type: String },
+    from: { type: String },
+    upi: { type: String },
   },
   { timestamps: true }
 );
